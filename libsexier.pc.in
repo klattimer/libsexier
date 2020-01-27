@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libsexier
+Description: Sexy cairo widgets for GTK
+Version: @VERSION@
+Libs: -L${libdir} -lfittsmenu @LIBSEXIER_LIBS@
+Cflags: -I${includedir} @LIBSEXIER_CFLAGS@

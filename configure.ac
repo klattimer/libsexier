@@ -1,0 +1,58 @@
+AC_INIT([Libsexier], [0.1], [karl@qdh.org.uk], [libsexier])
+
+AC_CONFIG_SRCDIR([libsexier/fittsmenu.c])
+AC_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE
+AM_MAINTAINER_MODE
+AM_INIT_AUTOMAKE([1.10])
+
+AC_PROG_CC
+AM_PROG_CC_C_O
+AC_PROG_LIBTOOL
+AC_HEADER_STDC
+
+GTK_MODULES="gtk+-2.0 >= 2.10.0"
+PKG_CHECK_MODULES(GTK, $GTK_MODULES)
+
+CAIRO_MODULES="cairo >= 1.4.2"
+PKG_CHECK_MODULES(CAIRO, $CAIRO_MODULES)
+
+GLIB_MODULES="glib-2.0 >= 2.10.0"
+PKG_CHECK_MODULES(GLIB, $GLIB_MODULES)
+
+RSVG_MODULES="librsvg-2.0 >= 2.16.0"
+PKG_CHECK_MODULES(RSVG, $RSVG_MODULES)
+
+GLITZ_MODULES="glitz >= 0.5.6"
+PKG_CHECK_MODULES(GLITZ, $GLITZ_MODULES, have_glitz=yes, have_glitz=no)
+if test x$have_glitz = xyes; then
+  CAIRO_GLITZ_MODULES="cairo-glitz >= 1.4.2"
+  PKG_CHECK_MODULES(CAIRO_GLITZ, $CAIRO_GLITZ_MODULES, have_cairo_glitz=yes, have_cairo_glitz=no)
+
+  GLITZ_GLX_MODULES="glitz-glx >= 0.5.6"
+  PKG_CHECK_MODULES(GLITZ_GLX, $GLITZ_GLX_MODULES, have_glitz_glx=yes, have_cairo_glitz_glx=no)
+fi
+
+LIBSEXIER_LIBS="$GTK_LIBS $CAIRO_LIBS $GLIB_LIBS $RSVG_LIBS"
+LIBSEXIER_CFLAGS="$GTK_CFLAGS $CAIRO_CFLAGS $GLIB_CFLAGS $RSVG_CFLAGS"
+
+if test x$have_cairo_glitz = xyes; then
+  LIBSEXIER_LIBS="$LIBSEXIER_LIBS $GLITZ_LIBS $CAIRO_GLITZ_LIBS"
+  LIBSEXIER_CFLAGS="$LIBSEXIER_CFLAGS $GLITZ_CFLAGS $CAIRO_GLITZ_CFLAGS"
+
+  AC_DEFINE(USE_GLITZ, "1", [Whether we have glitz])
+
+  if test x$have_glitz_glx = xyes; then
+    LIBSEXIER_LIBS="$LIBSEXIER_LIBS $GLITZ_GLX_LIBS"
+    LIBSEXIER_CFLAGS="$LIBSEXIER_CFLAGS $GLITZ_GLX_CFLAGS"
+  fi
+fi
+
+AC_SUBST(LIBSEXIER_CFLAGS)
+AC_SUBST(LIBSEXIER_LIBS)
+AC_OUTPUT([
+Makefile
+libsexier/Makefile
+examples/Makefile
+libsexier.pc
+])
